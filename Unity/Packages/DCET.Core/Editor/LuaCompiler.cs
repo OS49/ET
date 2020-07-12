@@ -87,7 +87,11 @@ namespace DCETEditor
 
             var info = new ProcessStartInfo()
             {
+#if UNITY_EDITOR_OSX
+                FileName = MacDotnetCoreSDKpath,
+#else
                 FileName = dotnet,
+#endif
                 Arguments = args,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
@@ -135,23 +139,19 @@ namespace DCETEditor
             }
             return has;
         }
-
+        /// <summary>
+        /// 默认.net sdk core位置, Mac系统编译时关注这个参数
+        /// </summary>
+        public static string MacDotnetCoreSDKpath = "/usr/local/share/dotnet/dotnet";
         private static bool InternalCheckDotnetInstall()
         {
             var info = new ProcessStartInfo()
             {
-#if UNITY_EDITOR
-                //p.StartInfo.Arguments = "-a TexturePacker -n --args xxx";
-                FileName = "open",
-                Arguments = "-a " + dotnet + "--version",
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                CreateNoWindow = true,
-                StandardOutputEncoding = Encoding.UTF8,
-                StandardErrorEncoding = Encoding.UTF8,
+#if UNITY_EDITOR_OSX
+                FileName = MacDotnetCoreSDKpath,
 #else
                 FileName = dotnet,
+#endif
                 Arguments = "--version",
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
@@ -159,7 +159,6 @@ namespace DCETEditor
                 CreateNoWindow = true,
                 StandardOutputEncoding = Encoding.UTF8,
                 StandardErrorEncoding = Encoding.UTF8,
-#endif
             };
             try
             {
@@ -182,7 +181,7 @@ namespace DCETEditor
                     }
                     else
                     {
-                        UnityEngine.Debug.LogErrorFormat("dotnet process exitcode: ", p.ExitCode);
+                        UnityEngine.Debug.LogErrorFormat("dotnet process exitcode: " + p.ExitCode);
 
                     }
                     return false;
